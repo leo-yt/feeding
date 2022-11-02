@@ -1,10 +1,11 @@
 import './index.scss'
-import { View, Text, Picker, Button, Slider, Image, Input } from '@tarojs/components'
+import { View, Text, Picker, Button, Image  } from '@tarojs/components'
 import { AtCard, AtButton, AtTabBar, AtModal, AtModalContent, AtModalAction, AtList, AtListItem, AtActionSheet, AtActionSheetItem } from 'taro-ui'
 import { useState } from 'react';
 import pic from './bottle.png';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { getTimes, today, tsToDate, dateToTs, getDiffTime, uid } from '../../utils';
+import InputNumber from './components/InputNumber';
 
 const Index = () => {
   const [dataSource, setData] = useState([]);
@@ -18,18 +19,24 @@ const Index = () => {
     return data.reduce((acc, next) => acc + next.amount, 0)
   }
 
-  const onMilkChange = (e: any) => {
-    setMilkAmount(+e.detail.value);
+  const onMilkChange = (v: any) => {
+    setMilkAmount(+v);
   }
   const onPickerChange = (e: any) => {
     setMilkTime(e.detail.value);
   }
   const onModalCancel = () => {
+    Taro.vibrateShort({
+      type: 'medium'
+    });
     setOpened(false);
     setMilkAmount(180);
     setMilkTime(getTimes());
   }
   const onConfirm = () => {
+    Taro.vibrateShort({
+      type: 'medium'
+    });
     const d: any = {
       time: dateToTs(milkTime),
       amount: milkAmount,
@@ -43,14 +50,23 @@ const Index = () => {
     onModalCancel();
   }
   const onClickFeed = () => {
+    Taro.vibrateShort({
+      type: 'medium'
+    });
     setOpened(true);
     setMilkTime(getTimes());
   }
   const onClickCard = (v: any) => {
+    Taro.vibrateShort({
+      type: 'medium'
+    });
     setActionOpend(true);
     setCurrentData(v);
   }
   const onActionClose = () => {
+    Taro.vibrateShort({
+      type: 'medium'
+    });
     setActionOpend(false);
   }
 
@@ -126,9 +142,7 @@ const Index = () => {
         <AtModalContent>
           <View className="milk-amount-view">
             <View className="milk-text">奶量</View>
-            <Input type="number" value={`${milkAmount}`} onInput={onMilkChange} />
-            &nbsp;
-            <Text>ml</Text>
+            <InputNumber value={milkAmount} onChange={onMilkChange} max={300} min={10} step={5}/>            
           </View>
           <Picker mode='time' onChange={onPickerChange} end={milkTime}>
             <AtList>

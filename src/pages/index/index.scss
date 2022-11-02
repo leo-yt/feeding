@@ -35,8 +35,30 @@
     .milk-text {
       white-space: nowrap;
     }
-    input {
-      text-align: right;
+    .at-input {
+      margin: 0;
+      padding: 0;
+      input {
+        text-align: right;
+        display: none;
+      }
+      &::after {
+        display: none;
+      }
+      &.at-input-opend {
+        input {
+          display: block;
+        }
+      }
     }
+    .at-input-opend {
+      // display: block;
+      visibility: visible;
+    }
+    .at-input-close {
+      // display: none;
+      visibility: hidden;
+    }
+    
   }
 }
