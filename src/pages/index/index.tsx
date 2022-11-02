@@ -1,83 +1,25 @@
 import './index.scss'
-import { View, Text, Picker, Button, Slider, Image } from '@tarojs/components'
+import { View, Text, Picker, Button, Slider, Image, Input } from '@tarojs/components'
 import { AtCard, AtButton, AtTabBar, AtModal, AtModalContent, AtModalAction, AtList, AtListItem, AtActionSheet, AtActionSheetItem } from 'taro-ui'
 import { useState } from 'react';
 import pic from './bottle.png';
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro';
+import { getTimes, today, tsToDate, dateToTs, getDiffTime, uid } from '../../utils';
 
 const Index = () => {
   const [dataSource, setData] = useState([]);
-  const getTimes = (ts?: string | number) => {
-    const x = ts ?? new Date().getTime();
-    const date = new Date(x);
-    const hour = date.getHours();
-    const minutes = date.getMinutes();
-    const min = minutes >= 10 ? minutes : `0${minutes}`;
-    return `${hour}:${min}`;
-  }
   const [isOpened, setOpened] = useState(false);
   const [isActionOpend, setActionOpend] = useState(false);
   const [milkAmount, setMilkAmount] = useState(180);
   const [milkTime, setMilkTime] = useState('');
   const [currentData, setCurrentData] = useState({});
 
-  const today = () => {
-    const date = new Date();
-    const y = date.getFullYear();
-    const m = date.getMonth() + 1;
-    const d = date.getDate();
-    return `${y}/${m}/${d}`;
-  }
-  const tsToDate = (ts?: number) => {
-    const x = ts ?? new Date().getTime();
-    const date = new Date(x);
-    const y = date.getFullYear();
-    const m = date.getMonth() + 1;
-    const d = date.getDate();
-    const w = date.getDay();
-    const h = date.getHours();
-    const ms = date.getMinutes();
-    const weekMap = {
-      1: '一',
-      2: '二',
-      3: '三',
-      4: '四',
-      5: '五',
-      6: '六',
-      7: '日',
-    }
-    return `${y}/${m}/${d} ${h}:${ms >= 10 ? ms : `0${ms}`}`
-  }
-  const dateToTs = (value: string) => {
-    const date = new Date();
-    const y = date.getFullYear();
-    const m = date.getMonth() + 1;
-    const d = date.getDate();
-    const [h,ms] = value.split(':');
-    const ds = `${y}/${m}/${d} ${h}:${+ms >= 10 ? ms : `0${ms}`}`;
-    return new Date(ds).getTime()
-  }
-  const getDiffTime = (time: number) => {
-    const now = new Date().getTime();
-    const diff = now - time;
-    const bh = diff/(60*60*1000)
-    const dh = parseInt(`${bh}`);
-    const dm = (bh-dh)*60;
-    const minutes = parseInt(`${dm}`);
-    return `${dh}小时${minutes}分前`;
-  }
   const getTotalAmount = (data: any[]) => {
     return data.reduce((acc, next) => acc + next.amount, 0)
   }
-  const uid = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  }
+
   const onMilkChange = (e: any) => {
-    setMilkAmount(e.detail.value);
+    setMilkAmount(+e.detail.value);
   }
   const onPickerChange = (e: any) => {
     setMilkTime(e.detail.value);
@@ -124,6 +66,11 @@ const Index = () => {
     const d = temp.filter(d => d.id !== currentData.id);
     setData(d);
     Taro.setStorageSync(`_${today()}_data_`, d);
+    Taro.showToast({
+      title: '成功',
+      icon: 'success',
+      duration: 1000
+    })
   }
 
   const sortData = dataSource.sort((a: any, b: any) => b.time - a.time);
@@ -133,6 +80,10 @@ const Index = () => {
     if (value) {
       setData(value);
     }
+    Taro.showShareMenu({
+      withShareTicket: true,
+      showShareItems: ['wechatFriends', 'shareAppMessage', 'shareTimeline', 'wechatMoment']
+    })
   })
 
   return (
@@ -173,7 +124,12 @@ const Index = () => {
       />
       <AtModal isOpened={isOpened} closeOnClickOverlay={false}>
         <AtModalContent>
-          <Text>奶量</Text><Slider min={10} max={280} showValue step={5} value={milkAmount} onChange={onMilkChange} />
+          <View className="milk-amount-view">
+            <View className="milk-text">奶量</View>
+            <Input type="number" value={`${milkAmount}`} onInput={onMilkChange} />
+            &nbsp;
+            <Text>ml</Text>
+          </View>
           <Picker mode='time' onChange={onPickerChange} end={milkTime}>
             <AtList>
               <AtListItem title='请选择时间' extraText={milkTime} />
@@ -190,7 +146,7 @@ const Index = () => {
           编辑
         </AtActionSheetItem>
         <AtActionSheetItem onClick={onDelete}>
-          删除
+          <Text style={{color: 'red'}}>删除</Text>
         </AtActionSheetItem>
       </AtActionSheet>
     </View>

@@ -22,4 +22,21 @@
       margin-bottom: 0;
     }
   }
+  .action-btn-del {
+    color: red;
+  }
+  .milk-amount-view {
+    display: flex;
+    padding: 0 24px 24px 24px;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 32px;
+    margin-right: 30px;
+    .milk-text {
+      white-space: nowrap;
+    }
+    input {
+      text-align: right;
+    }
+  }
 }
