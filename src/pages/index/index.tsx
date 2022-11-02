@@ -105,7 +105,10 @@ const Index = () => {
   return (
     <View className="wrapper">
       <Text className="today">{tsToDate()}</Text>
-      <AtButton className="total">喂奶{dataSource.length}次，{getTotalAmount(dataSource)}ml</AtButton>
+      <AtButton className="total">
+      <Image src={pic} style={{width: 48, height: 48, verticalAlign: -15}}/>
+        喂奶{dataSource.length}次，{getTotalAmount(dataSource)}ml
+      </AtButton>
       {
         sortData.length === 0 && <Image src={pic} style={{margin: '0 auto', display: 'block'}}/>
       }
