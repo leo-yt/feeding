@@ -147,9 +147,9 @@ const Index = () => {
             <View className="milk-text">奶量</View>
             <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5}/>            
           </View>
-          <Picker mode='time' onChange={onPickerChange} end={getTimes()}>
+          <Picker mode='time' onChange={onPickerChange} end={getTimes()} value={milkTime}>
             <AtList>
-              <AtListItem title='请选择时间' extraText={milkTime} />
+              <AtListItem title='时间' extraText={milkTime} />
             </AtList>
           </Picker>
         </AtModalContent>
