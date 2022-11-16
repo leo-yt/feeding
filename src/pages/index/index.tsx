@@ -1,5 +1,5 @@
 import './index.scss'
-import { View, Text, Picker, Button, Image  } from '@tarojs/components'
+import { View, Text, Picker, Button, Image } from '@tarojs/components'
 import { AtCard, AtButton, AtTabBar, AtModal, AtModalContent, AtModalAction, AtList, AtListItem, AtActionSheet, AtActionSheetItem } from 'taro-ui'
 import { useState } from 'react';
 import pic from './bottle.png';
@@ -145,9 +145,9 @@ const Index = () => {
         <AtModalContent>
           <View className="milk-amount-view">
             <View className="milk-text">奶量</View>
-            <InputNumber value={milkAmount} onChange={onMilkChange} max={300} min={10} step={5}/>            
+            <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5}/>            
           </View>
-          <Picker mode='time' onChange={onPickerChange} end={milkTime}>
+          <Picker mode='time' onChange={onPickerChange} end={getTimes()}>
             <AtList>
               <AtListItem title='请选择时间' extraText={milkTime} />
             </AtList>

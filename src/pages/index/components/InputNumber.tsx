@@ -47,7 +47,7 @@ const InputNumber = (props: IProps) => {
       </View>
     </View>
     &nbsp;
-    <Text>ml</Text>
+    <Text style={{verticalAlign: 'bottom'}}>ml</Text>
     </View>
   )
 
