@@ -57,11 +57,20 @@ const uid = () => {
     return v.toString(16);
   });
 }
+
+// 奶量兑换奶粉克数
+const milkMltoG = (v: number) => {
+  const spoon = 5; // 1勺5g
+  const base = 170/5;
+  return ((v / base) * spoon).toFixed(2);
+}
+
 export {
   getTimes,
   today,
   tsToDate,
   dateToTs,
   getDiffTime,
-  uid
+  uid,
+  milkMltoG
 }

@@ -9,10 +9,11 @@ interface IProps {
   min: number
   onChange: (value: number) => void
   step: number
+  unit?: string
 }
 
 const InputNumber = (props: IProps) => {
-  const {value, max, min, step, onChange } = props;
+  const {value, max, min, step, onChange, unit } = props;
   const [val, setVal] = useState(value); 
   const onMinus = () => {
     Taro.vibrateShort({
@@ -46,8 +47,13 @@ const InputNumber = (props: IProps) => {
         <Text className="at-icon at-icon-add at-input-number__btn-add"/>
       </View>
     </View>
-    &nbsp;
-    <Text style={{verticalAlign: 'bottom'}}>ml</Text>
+    {
+      unit && 
+      <>
+        &nbsp;
+        <Text style={{verticalAlign: 'bottom'}}>{unit}</Text>
+      </>
+    }
     </View>
   )
 

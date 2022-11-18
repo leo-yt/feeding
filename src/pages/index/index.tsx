@@ -4,7 +4,7 @@ import { AtCard, AtButton, AtTabBar, AtModal, AtModalContent, AtModalAction, AtL
 import { useState } from 'react';
 import pic from './bottle.png';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { getTimes, today, tsToDate, dateToTs, getDiffTime, uid } from '../../utils';
+import { getTimes, today, tsToDate, dateToTs, getDiffTime, uid, milkMltoG } from '../../utils';
 import InputNumber from './components/InputNumber';
 
 const Index = () => {
@@ -107,7 +107,7 @@ const Index = () => {
       <Text className="today">{tsToDate()}</Text>
       <AtButton className="total">
       <Image src={pic} style={{width: 48, height: 48, verticalAlign: -15}}/>
-        喂奶{dataSource.length}次，{getTotalAmount(dataSource)}ml
+        喂奶{dataSource.length}次，{getTotalAmount(dataSource)}ml， {milkMltoG(getTotalAmount(dataSource))}g
       </AtButton>
       {
         sortData.length === 0 && <Image src={pic} style={{margin: '0 auto', display: 'block'}}/>
@@ -128,7 +128,14 @@ const Index = () => {
               color: `rgb(97, 144, 232)`,
             }}
           >
-            奶量：{item.amount}ml
+            <View className="content-info">
+              <View>
+                实际奶量: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{item.amount}</Text>ml
+              </View>
+              <View>
+                奶粉克数: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{milkMltoG(item.amount)}</Text>g
+              </View>
+            </View>
           </AtCard>
         ))
       }
@@ -145,7 +152,7 @@ const Index = () => {
         <AtModalContent>
           <View className="milk-amount-view">
             <View className="milk-text">奶量</View>
-            <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5}/>            
+            <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5} unit="ml"/>            
           </View>
           <Picker mode='time' onChange={onPickerChange} end={getTimes()} value={milkTime}>
             <AtList>
@@ -158,7 +165,7 @@ const Index = () => {
           <Button onClick={onConfirm}>确定</Button>
         </AtModalAction>
       </AtModal>
-      <AtActionSheet isOpened={isActionOpend} onCancel={onActionClose} onClose={(onActionClose)}>
+      <AtActionSheet isOpened={isActionOpend} onCancel={onActionClose} onClose={onActionClose}>
         <AtActionSheetItem onClick={onEdit}>
           编辑
         </AtActionSheetItem>
