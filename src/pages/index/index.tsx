@@ -1,6 +1,9 @@
 import './index.scss'
-import { View, Text, Picker, Button, Image } from '@tarojs/components'
-import { AtCard, AtButton, AtTabBar, AtModal, AtModalContent, AtModalAction, AtList, AtListItem, AtActionSheet, AtActionSheetItem } from 'taro-ui'
+import { View, Text, Picker, Button, Image, RadioGroup, Radio, Label } from '@tarojs/components'
+import {
+  AtCard, AtButton, AtTabBar, AtModal, AtModalContent,
+  AtModalAction, AtList, AtListItem, AtActionSheet, AtActionSheetItem,
+} from 'taro-ui'
 import { useState } from 'react';
 import pic from './bottle.png';
 import Taro, { useDidShow } from '@tarojs/taro';
@@ -8,6 +11,17 @@ import { getTimes, today, tsToDate, dateToTs, getDiffTime, uid, milkMltoG } from
 import InputNumber from './components/InputNumber';
 
 const Index = () => {
+  const itemTypes = [
+    {
+      value: '1',
+      name: '喂奶',
+    },
+    {
+      value: '2',
+      name: '辅食'
+    }
+  ]
+  const [itemType, setItemType] = useState('1');
   const [dataSource, setData] = useState([]);
   const [isOpened, setOpened] = useState(false);
   const [isActionOpend, setActionOpend] = useState(false);
@@ -39,8 +53,9 @@ const Index = () => {
     });
     const d: any = {
       time: dateToTs(milkTime),
-      amount: milkAmount,
-      id: uid()
+      amount: itemType === '2' ? null : milkAmount,
+      id: uid(),
+      type: itemType
     }
     const temp: any[] = dataSource;
     const t = temp.filter(d => d.id !== currentData.id);
@@ -88,8 +103,14 @@ const Index = () => {
       duration: 1000
     })
   }
+  const onItemTypeChange = (e) => {
+    setItemType(e.detail.value)
+  }
 
   const sortData = dataSource.sort((a: any, b: any) => b.time - a.time);
+
+  const milkLength = dataSource.filter(d => d.type === '1')?.length;
+  const foodLength = dataSource.filter(d => d.type === '2')?.length;
 
   useDidShow(() => {
     const value = Taro.getStorageSync(`_${today()}_data_`);
@@ -107,7 +128,7 @@ const Index = () => {
       <Text className="today">{tsToDate()}</Text>
       <AtButton className="total">
       <Image src={pic} style={{width: 48, height: 48, verticalAlign: -15}}/>
-        喂奶{dataSource.length}次，{getTotalAmount(dataSource)}ml， {milkMltoG(getTotalAmount(dataSource))}g
+        喂奶{milkLength}次({getTotalAmount(dataSource)}ml, {milkMltoG(getTotalAmount(dataSource))}g),辅食{foodLength}次
       </AtButton>
       {
         sortData.length === 0 && <Image src={pic} style={{margin: '0 auto', display: 'block'}}/>
@@ -121,21 +142,24 @@ const Index = () => {
             key={item.id}
             note={tsToDate(item.time)}
             extra={getDiffTime(item.time)}
-            title={`喂奶粉`}
+            title={item.type === '1' ? '喂奶' : '辅食'}
             extraStyle={{
               fontSize: 12,
               maxWidth: 200,
               color: `rgb(97, 144, 232)`,
             }}
           >
-            <View className="content-info">
-              <View>
-                实际奶量: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{item.amount}</Text>ml
+            {
+              item.type === '1' &&
+              <View className="content-info">
+                <View>
+                  实际奶量: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{item.amount}</Text>ml
+                </View>
+                <View>
+                  奶粉克数: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{milkMltoG(item.amount)}</Text>g
+                </View>
               </View>
-              <View>
-                奶粉克数: <Text style={{color: 'hotpink', fontWeight: 'bolder'}}>{milkMltoG(item.amount)}</Text>g
-              </View>
-            </View>
+            }
           </AtCard>
         ))
       }
@@ -143,17 +167,31 @@ const Index = () => {
       <AtTabBar
         fixed
         tabList={[
-          { title: '记喂奶', iconType: 'add' },
+          { title: '记录', iconType: 'add' },
         ]}
         onClick={onClickFeed}
         current={0}
       />
       <AtModal isOpened={isOpened} closeOnClickOverlay={false}>
         <AtModalContent>
-          <View className="milk-amount-view">
-            <View className="milk-text">奶量</View>
-            <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5} unit="ml"/>            
+          <View>
+            <RadioGroup onChange={onItemTypeChange} className="modal-item-radio">
+              {
+                itemTypes.map((item, i) => (
+                  <Label for={item.value} key={i}>
+                    <Radio key={item.value} value={item.value} checked={item.value === itemType}>{item.name}</Radio>
+                  </Label>
+                ))
+              }
+            </RadioGroup>
           </View>
+          {
+            itemType === '1' &&
+            <View className="milk-amount-view">
+              <View className="milk-text">奶量</View>
+              <InputNumber value={milkAmount} onChange={onMilkChange} max={1000} min={10} step={5} unit="ml"/>            
+            </View>
+          }
           <Picker mode='time' onChange={onPickerChange} end={getTimes()} value={milkTime}>
             <AtList>
               <AtListItem title='时间' extraText={milkTime} />
